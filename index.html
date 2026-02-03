@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>FIFA Pack Opening</title>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:Arial, sans-serif;
+}
+
+/* BACKGROUND */
+#start-image, #bg-video, #bg-final{
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#bg-video, #bg-final{ display:none; }
+
+/* CENTER ELEMENTS */
+.center{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  display:none;
+  z-index:5;
+}
+
+#flag, #club{ width:150px; }
+
+#position{
+  font-size:80px;
+  font-weight:bold;
+  color:white;
+}
+
+/* CARD */
+#card img{
+  width:260px;
+}
+
+/* CONTROLS */
+.controls{
+  position:fixed;
+  bottom:40px;
+  width:100%;
+  text-align:center;
+  z-index:10;
+}
+
+button{
+  padding:14px 40px;
+  font-size:22px;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  background:linear-gradient(135deg,#f5c400,#ffea00);
+}
+
+/* EXIT */
+#exit{
+  position:fixed;
+  bottom:100px;
+  width:100%;
+  text-align:center;
+  color:white;
+  font-size:20px;
+  display:none;
+  z-index:10;
+}
+</style>
+</head>
+
+<body>
+
+<!-- START IMAGE -->
+<img id="start-image" src="assets/bg_start.jpg">
+
+<!-- VIDEO -->
+<video id="bg-video" muted loop>
+  <source src="assets/video/bg.mp4" type="video/mp4">
+</video>
+
+<!-- FINAL BG -->
+<img id="bg-final" src="assets/bg_final.jpg">
+
+<!-- ELEMENTS -->
+<img id="flag" class="center">
+<div id="position" class="center"></div>
+<img id="club" class="center">
+
+<div id="card" class="center">
+  <img id="cardImg">
+</div>
+
+<div class="controls">
+  <button id="openBtn">OPEN</button>
+</div>
+
+<div id="exit">TAP TO EXIT</div>
+
+<audio id="sound" src="assets/sound.mp3"></audio>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+const openBtn = document.getElementById("openBtn");
+const exitBtn = document.getElementById("exit");
+
+const startImg = document.getElementById("start-image");
+const bgVideo = document.getElementById("bg-video");
+const bgFinal = document.getElementById("bg-final");
+
+const flag = document.getElementById("flag");
+const positionEl = document.getElementById("position");
+const club = document.getElementById("club");
+const card = document.getElementById("card");
+const cardImg = document.getElementById("cardImg");
+
+const sound = document.getElementById("sound");
+
+/* PLAYER DATA */
+const players = [
+  {
+    flag:"assets/flags/vn.png",
+    position:"HN",
+    club:"assets/clubs/a2.png",
+    card:"assets/players/nn.png",
+    weight:10
+  },
+  {
+    flag:"assets/flags/vn.png",
+    position:"CAM",
+    club:"assets/clubs/a2.png",
+    card:"assets/players/dth.png",
+    weight:1
+  },
+  {
+    flag:"assets/flags/vn.png",
+    position:"LB",
+    club:"assets/clubs/a2.png",
+    card:"assets/players/trandat.png",
+    weight:5
+  },
+  {
+    flag:"assets/flags/vn.png",
+    position:"CB",
+    club:"assets/clubs/a2.png",
+    card:"assets/players/ducanh.png",
+    weight:10
+  },
+];
+
+/* RANDOM WEIGHT */
+function getRandomPlayer(){
+  const total = players.reduce((s,p)=>s+p.weight,0);
+  let r = Math.random()*total;
+  for(const p of players){
+    r -= p.weight;
+    if(r <= 0) return p;
+  }
+}
+
+/* HIDE ALL CENTER */
+function hideAll(){
+  flag.style.display="none";
+  positionEl.style.display="none";
+  club.style.display="none";
+}
+
+/* OPEN PACK */
+function openPack(){
+  const p = getRandomPlayer();
+  openBtn.style.display="none";
+
+  startImg.style.display="none";
+  bgVideo.style.display="block";
+  bgVideo.currentTime = 0;
+  bgVideo.play();
+
+  try{ sound.play(); }catch(e){}
+
+  setTimeout(()=>{
+    hideAll();
+    flag.src = p.flag;
+    flag.style.display="block";
+  },1000);
+
+  setTimeout(()=>{
+    hideAll();
+    positionEl.innerText = p.position;
+    positionEl.style.display="block";
+  },2500);
+
+  setTimeout(()=>{
+    hideAll();
+    club.src = p.club;
+    club.style.display="block";
+  },4000);
+
+  setTimeout(()=>{
+    hideAll();
+    bgVideo.style.display="none";
+    bgFinal.style.display="block";
+    cardImg.src = p.card;
+    card.style.display="block";
+    exitBtn.style.display="block";
+  },6000);
+}
+
+openBtn.addEventListener("click",openPack);
+exitBtn.addEventListener("click",()=>location.reload());
+
+});
+</script>
+
+</body>
+</html>
