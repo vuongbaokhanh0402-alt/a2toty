@@ -2,226 +2,320 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>FIFA Pack Opening</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>A2 IN MY HEART</title>
 
 <style>
 html,body{
   margin:0;
   padding:0;
-  width:100%;
-  height:100%;
+  background:black;
+  font-family:arial;
   overflow:hidden;
-  background:#000;
-  font-family:Arial, sans-serif;
+  color:white;
 }
 
-/* BACKGROUND */
-#start-image, #bg-video, #bg-final{
+/* background */
+#bgStart,#bgVideo,#bgFinal{
   position:fixed;
-  top:0; left:0;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
 }
+#bgVideo,#bgFinal{ display:none; }
 
-#bg-video, #bg-final{ display:none; }
-
-/* CENTER ELEMENTS */
+/* giữa */
 .center{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  display:none;
-  z-index:5;
-}
-
-#flag, #club{ width:150px; }
-
-#position{
-  font-size:80px;
-  font-weight:bold;
-  color:white;
-}
-
-/* CARD */
-#card img{
-  width:260px;
-}
-
-/* CONTROLS */
-.controls{
-  position:fixed;
-  bottom:40px;
-  width:100%;
   text-align:center;
-  z-index:10;
 }
 
-button{
-  padding:14px 40px;
-  font-size:22px;
-  border:none;
-  border-radius:30px;
-  cursor:pointer;
-  background:linear-gradient(135deg,#f5c400,#ffea00);
-}
-
-/* EXIT */
-#exit{
+/* OPEN */
+#openBtn{
   position:fixed;
-  bottom:100px;
-  width:100%;
-  text-align:center;
-  color:white;
+  bottom:40px;              /* thấp xuống thêm */
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:16px 50px;
   font-size:20px;
+  border:none;
+  border-radius:50px;
+
+  background:#ffd700;       /* vàng */
+  color:white;              /* chữ trắng */
+  font-weight:bold;
+
+  box-shadow:none;          /* bỏ glow */
+}
+
+
+/* thẻ */
+#card{ display:none; }
+#card img{ width:240px; }
+
+/* icon kho */
+#inventoryBtn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  font-size:24px;
+  background:rgba(0,0,0,0.6);
+  padding:10px;
+  border-radius:10px;
+}
+
+/* popup kho */
+#inventory{
+  position:fixed;
+  inset:0;
+  background:black;
   display:none;
+  flex-direction:column;
+  align-items:center;
+  padding-top:20px;
   z-index:10;
+}
+
+#closeInv{
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:24px;
+}
+
+#inventoryList{
+  margin-top:40px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+#inventoryList img{
+  width:90px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- START IMAGE -->
-<img id="start-image" src="assets/start.gif">
+<!-- BG -->
+<img id="bgStart" src="assets/bg_start.gif">
+<video id="bgVideo" src="assets/tunnel.mp4" muted></video>
+<img id="bgFinal" src="assets/bg_final.jpg">
 
-<!-- VIDEO -->
-<video id="bg-video" muted loop>
-  <source src="assets/video/bg.mp4" type="video/mp4">
-</video>
+<!-- OPEN -->
+<button id="openBtn">OPEN</button>
 
-<!-- FINAL BG -->
-<img id="bg-final" src="assets/bg_final.jpg">
+<!-- FLAG -->
+<div id="flag" class="center" style="display:none">
+  <img id="flagImg" width="120">
+</div>
 
-<!-- ELEMENTS -->
-<img id="flag" class="center">
-<div id="position" class="center"></div>
-<img id="club" class="center">
+<!-- POS -->
+<div id="pos" class="center" style="display:none;font-size:42px;font-weight:900;"></div>
 
+<!-- CLUB -->
+<div id="club" class="center" style="display:none">
+  <img id="clubImg" width="120">
+</div>
+
+<!-- CARD -->
 <div id="card" class="center">
   <img id="cardImg">
 </div>
 
-<div class="controls">
-  <button id="openBtn">OPEN</button>
+<!-- ICON -->
+<div id="inventoryBtn">📦</div>
+
+<!-- INVENTORY -->
+<div id="inventory">
+  <div id="closeInv">✖</div>
+  <h2>BỘ SƯU TẬP</h2>
+  <div id="inventoryList"></div>
 </div>
 
-<div id="exit">TAP TO EXIT</div>
+<!-- SOUND -->
+<audio id="sFlag" src="assets/sounds/flag.mp3"></audio>
+<audio id="sPos" src="assets/sounds/pos.mp3"></audio>
+<audio id="sClub" src="assets/sounds/club.mp3"></audio>
+<audio id="sCard" src="assets/sounds/card.mp3"></audio>
 
-<audio id="sound" src="assets/sound.mp3"></audio>
+<!-- MUSIC -->
+<audio id="music" src="assets/music/bg.mp3" loop></audio>
 
 <script>
-document.addEventListener("DOMContentLoaded",()=>{
+/* ================= MUSIC ================= */
+const music=document.getElementById("music");
+function startMusic(){
+  music.volume=0.5;
+  music.play().catch(()=>{});
+  document.removeEventListener("click",startMusic);
+  document.removeEventListener("touchstart",startMusic);
+}
+document.addEventListener("click",startMusic);
+document.addEventListener("touchstart",startMusic);
 
-const openBtn = document.getElementById("openBtn");
-const exitBtn = document.getElementById("exit");
+/* ================= USER ================= */
+let currentUser="guest";
 
-const startImg = document.getElementById("start-image");
-const bgVideo = document.getElementById("bg-video");
-const bgFinal = document.getElementById("bg-final");
-
-const flag = document.getElementById("flag");
-const positionEl = document.getElementById("position");
-const club = document.getElementById("club");
-const card = document.getElementById("card");
-const cardImg = document.getElementById("cardImg");
-
-const sound = document.getElementById("sound");
-
-/* PLAYER DATA */
-const players = [
-  {
-    flag:"assets/flags/vn.png",
-    position:"HN",
-    club:"assets/clubs/a2.png",
-    card:"assets/players/nn.png",
-    weight:10
-  },
-  {
-    flag:"assets/flags/vn.png",
-    position:"CAM",
-    club:"assets/clubs/a2.png",
-    card:"assets/players/dth.png",
-    weight:1
-  },
-  {
-    flag:"assets/flags/vn.png",
-    position:"LB",
-    club:"assets/clubs/a2.png",
-    card:"assets/players/trandat.png",
-    weight:5
-  },
-  {
-    flag:"assets/flags/vn.png",
-    position:"CB",
-    club:"assets/clubs/a2.png",
-    card:"assets/players/ducanh.png",
-    weight:10
-  },
+/* ================= DATA ================= */
+const players=[
+ {flag:"assets/flags/vn.png",pos:"HN",club:"assets/clubs/a2.png",card:"assets/cards/nn.png",weight:25},
+ {flag:"assets/flags/vn.png",pos:"LB",club:"assets/clubs/a2.png",card:"assets/cards/trandat.png",weight:50},
+ {flag:"assets/flags/vn.png",pos:"CAM",club:"assets/clubs/a2.png",card:"assets/cards/dth.png",weight:10},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/ducanh.png",weight:125},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/va.png",weight:100},
+ {flag:"assets/flags/vn.png",pos:"CM",club:"assets/clubs/a2.png",card:"assets/cards/bk.png",weight:1},
 ];
 
-/* RANDOM WEIGHT */
-function getRandomPlayer(){
-  const total = players.reduce((s,p)=>s+p.weight,0);
-  let r = Math.random()*total;
+function randomPlayer(){
+  const total=players.reduce((s,p)=>s+p.weight,0);
+  let r=Math.random()*total;
   for(const p of players){
-    r -= p.weight;
-    if(r <= 0) return p;
+    if(r<p.weight) return p;
+    r-=p.weight;
   }
 }
 
-/* HIDE ALL CENTER */
-function hideAll(){
-  flag.style.display="none";
-  positionEl.style.display="none";
-  club.style.display="none";
-}
+/* ================= DOM ================= */
+const openBtn=document.getElementById("openBtn");
+const bgStart=document.getElementById("bgStart");
+const bgVideo=document.getElementById("bgVideo");
+const bgFinal=document.getElementById("bgFinal");
 
-/* OPEN PACK */
-function openPack(){
-  const p = getRandomPlayer();
+const flag=document.getElementById("flag");
+const flagImg=document.getElementById("flagImg");
+const posDiv=document.getElementById("pos");
+const club=document.getElementById("club");
+const clubImg=document.getElementById("clubImg");
+
+const card=document.getElementById("card");
+const cardImg=document.getElementById("cardImg");
+
+const sFlag=document.getElementById("sFlag");
+const sPos=document.getElementById("sPos");
+const sClub=document.getElementById("sClub");
+const sCard=document.getElementById("sCard");
+
+let cardVisible=false;
+
+/* ================= OPEN ================= */
+openBtn.onclick=()=>{
   openBtn.style.display="none";
-
-  startImg.style.display="none";
+  bgStart.style.display="none";
   bgVideo.style.display="block";
-  bgVideo.currentTime = 0;
   bgVideo.play();
 
-  try{ sound.play(); }catch(e){}
+  const p=randomPlayer();
 
   setTimeout(()=>{
-    hideAll();
-    flag.src = p.flag;
+    flagImg.src=p.flag;
     flag.style.display="block";
+    sFlag.currentTime=0; sFlag.play();
   },1000);
 
   setTimeout(()=>{
-    hideAll();
-    positionEl.innerText = p.position;
-    positionEl.style.display="block";
-  },2500);
+    flag.style.display="none";
+    posDiv.innerText=p.pos;
+    posDiv.style.display="block";
+    sPos.currentTime=0; sPos.play();
+  },2000);
 
   setTimeout(()=>{
-    hideAll();
-    club.src = p.club;
+    posDiv.style.display="none";
+    clubImg.src=p.club;
     club.style.display="block";
-  },4000);
+    sClub.currentTime=0; sClub.play();
+  },3000);
 
   setTimeout(()=>{
-    hideAll();
+    club.style.display="none";
     bgVideo.style.display="none";
     bgFinal.style.display="block";
-    cardImg.src = p.card;
+
+    cardImg.src=p.card;
     card.style.display="block";
-    exitBtn.style.display="block";
-  },6000);
+    cardVisible=true;
+
+    /* SOUND CARD */
+    sCard.currentTime=0;
+    sCard.play();
+
+    saveCard(p.card);
+  },4500);
+};
+
+/* ================= EXIT ================= */
+function exitPack(){
+  if(!cardVisible) return;
+  cardVisible=false;
+
+  card.style.display="none";
+  bgFinal.style.display="none";
+  bgStart.style.display="block";
+  openBtn.style.display="block";
+}
+document.addEventListener("click",exitPack);
+document.addEventListener("touchstart",exitPack);
+
+/* ================= SAVE ================= */
+function saveCard(path){
+  const key="cards_"+currentUser;
+  let list=JSON.parse(localStorage.getItem(key))||[];
+
+  const exist=list.find(i=>i.card===path);
+  if(exist) exist.count++;
+  else list.push({card:path,count:1});
+
+  localStorage.setItem(key,JSON.stringify(list));
 }
 
-openBtn.addEventListener("click",openPack);
-exitBtn.addEventListener("click",()=>location.reload());
+/* ================= INVENTORY ================= */
+const inventoryBtn=document.getElementById("inventoryBtn");
+const inventory=document.getElementById("inventory");
+const closeInv=document.getElementById("closeInv");
 
-});
+inventoryBtn.onclick=()=>{
+  inventory.style.display="flex";
+  renderInventory();
+};
+closeInv.onclick=()=>{
+  inventory.style.display="none";
+};
+
+function renderInventory(){
+  const key="cards_"+currentUser;
+  const list=JSON.parse(localStorage.getItem(key))||[];
+
+  const box=document.getElementById("inventoryList");
+  box.innerHTML="";
+
+  list.forEach(item=>{
+    const wrap=document.createElement("div");
+    wrap.style.position="relative";
+    wrap.style.margin="8px";
+
+    const img=document.createElement("img");
+    img.src=item.card;
+
+    const count=document.createElement("div");
+    count.innerText="x"+item.count;
+    count.style.position="absolute";
+    count.style.bottom="0";
+    count.style.right="0";
+    count.style.background="red";
+    count.style.padding="2px 6px";
+    count.style.fontSize="12px";
+
+    wrap.appendChild(img);
+    wrap.appendChild(count);
+    box.appendChild(wrap);
+  });
+}
 </script>
 
 </body>
