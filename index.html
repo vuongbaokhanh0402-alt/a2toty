@@ -6,6 +6,59 @@
 <title>A2 IN MY HEART</title>
 
 <style>
+/* background tĩnh */
+#bgStart{
+  position:fixed;
+  inset:0;
+  background:url("assets/bg_start.jpg") center/cover no-repeat;
+  z-index:-2;
+}
+
+/* pack ở giữa */
+#packImg{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(1);
+
+  height: min(88vh, 680px); /* 👈 QUAN TRỌNG */
+  width: auto;              /* giữ tỉ lệ gốc */
+
+  animation:idle 2.5s infinite ease-in-out;
+  pointer-events:none;
+  will-change: transform, filter;
+  background: transparent;
+}
+/* animation idle */
+@keyframes idle{
+  0%{ transform:translate(-50%,-50%) scale(1); }
+  50%{ transform:translate(-50%,-50%) scale(1.08); }
+  100%{ transform:translate(-50%,-50%) scale(1); }
+}
+
+/* animation glow + thu nhỏ */
+@keyframes packOpenAnim{
+  0%{
+    transform:translate(-50%,-50%) scale(1);
+    filter:drop-shadow(0 0 0px white);
+  }
+
+  40%{
+    transform:translate(-50%,-50%) scale(1.08);
+    filter:drop-shadow(0 0 15px white)
+           drop-shadow(0 0 30px white);
+  }
+
+  100%{
+    transform:translate(-50%,-50%) scale(0.9);
+    filter:drop-shadow(0 0 35px white)
+           drop-shadow(0 0 70px white);
+  }
+}
+
+.pack-open{
+  animation:packOpenAnim 2.2s ease forwards !important;
+}
 html,body{
   margin:0;
   padding:0;
@@ -103,7 +156,11 @@ html,body{
 <body>
 
 <!-- BG -->
-<img id="bgStart" src="assets/bg_start.gif">
+<!-- BACKGROUND TĨNH -->
+<div id="bgStart"></div>
+
+<!-- ẢNH PACK -->
+<img id="packImg" src="assets/pack.png">
 <video id="bgVideo" src="assets/tunnel.mp4" muted></video>
 <img id="bgFinal" src="assets/bg_final.jpg">
 
@@ -169,7 +226,8 @@ const players=[
  {flag:"assets/flags/vn.png",pos:"CAM",club:"assets/clubs/a2.png",card:"assets/cards/dth.png",weight:10},
  {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/ducanh.png",weight:125},
  {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/va.png",weight:100},
- {flag:"assets/flags/vn.png",pos:"CM",club:"assets/clubs/a2.png",card:"assets/cards/bk.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CM",club:"assets/clubs/a2.png",card:"assets/cards/bk.png",weight:10},
+ {flag:"assets/flags/vn.png",pos:"RB",club:"assets/clubs/a2.png",card:"assets/cards/thanh.png",weight:50},
 ];
 
 function randomPlayer(){
@@ -186,6 +244,7 @@ const openBtn=document.getElementById("openBtn");
 const bgStart=document.getElementById("bgStart");
 const bgVideo=document.getElementById("bgVideo");
 const bgFinal=document.getElementById("bgFinal");
+const packImg = document.getElementById("packImg");
 
 const flag=document.getElementById("flag");
 const flagImg=document.getElementById("flagImg");
@@ -204,51 +263,74 @@ const sCard=document.getElementById("sCard");
 let cardVisible=false;
 
 /* ================= OPEN ================= */
-openBtn.onclick=()=>{
+ openBtn.onclick=()=>{
+
+  /* 1️⃣ Ẩn nút */
   openBtn.style.display="none";
-  bgStart.style.display="none";
-  bgVideo.style.display="block";
-  bgVideo.play();
 
-  const p=randomPlayer();
+  /* 2️⃣ Hiệu ứng pack thu nhỏ + phát sáng */
+  // tắt idle trước
+  packImg.style.animation = "none";
+  packImg.offsetHeight; // force reflow để reset animation
 
+  // thêm animation mở
+  packImg.classList.add("pack-open");
+
+  /* 3️⃣ Delay 1 giây rồi mới vào hầm */
   setTimeout(()=>{
-    flagImg.src=p.flag;
-    flag.style.display="block";
-    sFlag.currentTime=0; sFlag.play();
-  },1000);
 
-  setTimeout(()=>{
-    flag.style.display="none";
-    posDiv.innerText=p.pos;
-    posDiv.style.display="block";
-    sPos.currentTime=0; sPos.play();
-  },2000);
+    packImg.style.display="none";
+    bgStart.style.display="none";
 
-  setTimeout(()=>{
-    posDiv.style.display="none";
-    clubImg.src=p.club;
-    club.style.display="block";
-    sClub.currentTime=0; sClub.play();
-  },3000);
+    bgVideo.style.display="block";
 
-  setTimeout(()=>{
-    club.style.display="none";
-    bgVideo.style.display="none";
-    bgFinal.style.display="block";
+    bgVideo.pause();
+    bgVideo.currentTime = 0;
+    bgVideo.load();
+    bgVideo.play();
 
-    cardImg.src=p.card;
-    card.style.display="block";
-    cardVisible=true;
+    const p=randomPlayer();
 
-    /* SOUND CARD */
-    sCard.currentTime=0;
-    sCard.play();
+    setTimeout(()=>{
+     flagImg.src=p.flag;
+     flag.style.display="block";
+     sFlag.currentTime=0; 
+     sFlag.play();
+    },1200);
 
-    saveCard(p.card);
-  },4500);
+    setTimeout(()=>{
+     flag.style.display="none";
+     posDiv.innerText=p.pos;
+     posDiv.style.display="block";
+     sPos.currentTime=0; 
+     sPos.play();
+    },3000);
+
+    setTimeout(()=>{
+     posDiv.style.display="none";
+     clubImg.src=p.club;
+     club.style.display="block";
+     sClub.currentTime=0; 
+     sClub.play();
+    },4800);
+
+    setTimeout(()=>{
+     club.style.display="none";
+     bgVideo.style.display="none";
+     bgFinal.style.display="block";
+
+     cardImg.src=p.card;
+     card.style.display="block";
+     cardVisible=true;
+
+     sCard.currentTime=0;
+     sCard.play();
+
+     saveCard(p.card);
+    },7000);
+  },1800); // 👈 delay trước khi vào hầm
+
 };
-
 /* ================= EXIT ================= */
 function exitPack(){
   if(!cardVisible) return;
@@ -257,6 +339,15 @@ function exitPack(){
   card.style.display="none";
   bgFinal.style.display="none";
   bgStart.style.display="block";
+
+  packImg.style.display="block";
+
+  // ✅ RESET ANIMATION CHUẨN
+  packImg.classList.remove("pack-open");
+  packImg.style.animation = "none";
+  packImg.offsetHeight; // force reflow
+  packImg.style.animation = ""; // trả lại animation CSS
+
   openBtn.style.display="block";
 }
 document.addEventListener("click",exitPack);
