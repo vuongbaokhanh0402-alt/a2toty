@@ -240,17 +240,17 @@ html,body{
 </div>
 <!-- ===== POST CARD CUTSCENE (SPECIAL ONLY) ===== -->
 <video id="postSpecialCutscene"
-  src="assets/cutscene/special_after.mp4"
-  style="
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:none;
-    z-index:9999;
-  "
-  playsinline>
+src="https://drive.google.com/uc?export=download&id=1vY5Sc3Wnvt96hCCERdMc87gPy8dsZhcz"
+style="
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+display:none;
+z-index:9999;
+"
+playsinline>
 </video>
 <!-- ===== ADMIN BUTTON ===== -->
 <div id="adminBtn"
@@ -451,19 +451,29 @@ document.addEventListener("click",startMusic);
 /* ===== DATA ===== */
 let currentUser="guest";
 const players=[
- {flag:"assets/flags/vn.png",pos:"HN",club:"assets/clubs/a2.png",card:"assets/cards/nn.png",weight:25},
- {flag:"assets/flags/vn.png",pos:"LB",club:"assets/clubs/a2.png",card:"assets/cards/trandat.png",weight:40},
- {flag:"assets/flags/vn.png",pos:"CAM",club:"assets/clubs/a2.png",card:"assets/cards/dth.png",weight:20},
- {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/ducanh.png",weight:100},
- {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/va.png",weight:100},
- {flag:"assets/flags/vn.png",pos:"CM",club:"assets/clubs/a2.png",card:"assets/cards/bk.png",weight:10},
- {flag:"assets/flags/vn.png",pos:"RB",club:"assets/clubs/a2.png",card:"assets/cards/thanh.png",weight:50},
- {flag:"assets/flags/vn.png",pos:"LB",club:"assets/clubs/a2.png",card:"assets/cards/huan.png",weight:90},
- {flag:"assets/flags/vn.png",pos:"GK",club:"assets/clubs/a2.png",card:"assets/cards/gau.png",weight:30},
+ {flag:"assets/flags/vn.png",pos:"HN",club:"assets/clubs/a2.png",card:"assets/cards/nn.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"LB",club:"assets/clubs/a2.png",card:"assets/cards/trandat.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CAM",club:"assets/clubs/a2.png",card:"assets/cards/dth.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/ducanh.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/va.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CM",club:"assets/clubs/a2.png",card:"assets/cards/bk.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"RB",club:"assets/clubs/a2.png",card:"assets/cards/thanh.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"LB",club:"assets/clubs/a2.png",card:"assets/cards/huan.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"GK",club:"assets/clubs/a2.png",card:"assets/cards/gau.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/an.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"GK",club:"assets/clubs/a2.png",card:"assets/cards/bao.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"ST",club:"assets/clubs/a2.png",card:"assets/cards/binh.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/dcong.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"ST",club:"assets/clubs/a2.png",card:"assets/cards/hao.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"ST",club:"assets/clubs/a2.png",card:"assets/cards/kien.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"RW",club:"assets/clubs/a2.png",card:"assets/cards/minh.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"CB",club:"assets/clubs/a2.png",card:"assets/cards/phu.png",weight:1},
+ {flag:"assets/flags/vn.png",pos:"ST",club:"assets/clubs/a2.png",card:"assets/cards/kcong.png",weight:1},
+
 ];
 const SPECIAL_CARD = {
   flag:"assets/flags/vn.png",
-  pos:"⭐",
+  pos:"❤️",
   club:"assets/clubs/a2.png",
   card:"assets/cards/special.png",
   isSpecial:true
