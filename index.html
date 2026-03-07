@@ -253,6 +253,7 @@ z-index:9999;
 "
 allow="autoplay; fullscreen">
 </iframe>
+
 <!-- ===== ADMIN BUTTON ===== -->
 <div id="adminBtn"
   style="position:fixed;bottom:10px;left:10px;
@@ -733,14 +734,16 @@ function showCard(p){
       card.style.display = "none";
 
       postSpecialVideo.style.display = "block";
-      postSpecialVideo.currentTime = 0;
-      postSpecialVideo.muted = false;
-      postSpecialVideo.play();
+      postSpecialVideo.src =
+      "https://www.youtube.com/embed/lr0TjhbKaHw?autoplay=1&controls=0&rel=0";
 
-      postSpecialVideo.onended = ()=>{
-        postSpecialVideo.style.display = "none";
-        card.style.display = "block";
-      };
+      postSpecialVideo.style.display = "block";
+
+      /* tự tắt sau khi video chạy xong (ví dụ 15s) */
+      setTimeout(()=>{
+  	postSpecialVideo.style.display="none";
+      	card.style.display="block";
+      },15000);
     },800); // delay để người chơi kịp thấy card
   }
 }
