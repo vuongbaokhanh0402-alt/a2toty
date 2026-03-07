@@ -158,7 +158,15 @@ html,body{
   color:white;
   font-weight:bold;
 }
-
+#postSpecialCutscene{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  background:black;
+  display:none;
+  z-index:9999;
+}
 /* ===== CARD ===== */
 #card{ display:none; }
 #card img{
@@ -239,20 +247,9 @@ html,body{
   </div>
 </div>
 <!-- ===== POST CARD CUTSCENE (SPECIAL ONLY) ===== -->
-<iframe
-id="postSpecialCutscene"
-src=""
-style="
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
-border:none;
-display:none;
-z-index:9999;
-"
-allow="autoplay; fullscreen">
-</iframe>
+<div id="postSpecialCutscene">
+   <div id="ytPlayer"></div>
+</div>
 <!-- ===== ADMIN BUTTON ===== -->
 <div id="adminBtn"
   style="position:fixed;bottom:10px;left:10px;
@@ -367,6 +364,36 @@ allow="autoplay; fullscreen">
 
 <!-- ================= SCRIPT ================= -->
 <script>
+let ytPlayer;
+
+function onYouTubeIframeAPIReady(){
+
+  ytPlayer = new YT.Player("ytPlayer",{
+    height:"100%",
+    width:"100%",
+    videoId:"lr0TjhbKaHw",
+    playerVars:{
+      autoplay:0,
+      controls:0,
+      rel:0
+    },
+    events:{
+      onStateChange:onPlayerStateChange
+    }
+  });
+
+}
+
+function onPlayerStateChange(event){
+
+  if(event.data === YT.PlayerState.ENDED){
+
+    postSpecialVideo.style.display="none";
+    card.style.display="block";
+
+  }
+
+}
 /* ===== LOADING LOGIC ===== */
 const loadingScene = document.getElementById("loadingScene");
 const loadingText  = document.getElementById("loadingText");
@@ -727,31 +754,41 @@ function showCard(p){
 
   saveCard(p.card);
 
-  /* ===== NẾU LÀ THẺ ĐẶC BIỆT → CUTSCENE SAU ===== */
-if(p.isSpecial){
-  setTimeout(()=>{
+  /* ===== NẾU LÀ THẺ ĐẶC BIỆT → CUTSCENE ===== */
+  if (p.isSpecial) {
 
-    card.style.display="none";
+   setTimeout(() => {
 
-    postSpecialVideo.src =
-    "https://www.youtube.com/embed/lr0TjhbKaHw?autoplay=1&controls=0&rel=0";
+    card.style.display = "none";
+    postSpecialVideo.style.display = "block";
 
-    postSpecialVideo.style.display="block";
+    if (ytPlayer) {
+      ytPlayer.playVideo();
+    }
 
-    setTimeout(()=>{
-      postSpecialVideo.style.display="none";
-      postSpecialVideo.src="";
-      card.style.display="block";
-    },15000);
+    }, 800);
 
-  },800);
+   }
+
 }
+/* ===== KHI VIDEO KẾT THÚC ===== */
+  function onPlayerStateChange(event) {
+
+   if (event.data === YT.PlayerState.ENDED) {
+
+    postSpecialVideo.style.display = "none";
+    card.style.display = "block";
+
+   }
+
+  }
+/* ===== FORCE SPECIAL CARD ===== */
 const forceSpecialBtn = document.getElementById("forceSpecialBtn");
 
-forceSpecialBtn.onclick = ()=>{
+forceSpecialBtn.onclick = () =>
+{
   nextForcedCard = SPECIAL_CARD;
 
-  // bỏ chọn card thường nếu có
   document
     .querySelectorAll("#adminCardList img")
     .forEach(i=>i.classList.remove("selected"));
@@ -759,6 +796,6 @@ forceSpecialBtn.onclick = ()=>{
   alert("⭐ Thẻ ĐẶC BIỆT đã được chọn cho lần mở tiếp theo");
 };
 </script>
-
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
